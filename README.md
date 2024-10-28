@@ -26,4 +26,4 @@
   (Minor: smaller than or equal to 10 lots, Major: greater than 10 lots)
 
 
-Please See Sample Scripts for Major Residential District (MRD) allows different housing types and (SINGLE FAMILY) SF6 only one housing type.
+Please See Sample Scripts for Major Residential District (MRD) allows different housing types and Single Family (SF6) allows only one housing type.
