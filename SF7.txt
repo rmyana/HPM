@@ -26,7 +26,7 @@ with arcpy.da.UpdateCursor(parcels_OG, ['AREA', 'Max_Units', 'ZoningCode', 'area
 	if zoning_district == "SF 7":
             # Apply zoning-specific calculations and constraints
             units = {}
-            if parcel_area >= 653400:
+            if parcel_area >= 653400:  # 15 acres
                 proportions = {
                     "Single Family": 0.60,
                     "Site Constraints": 0.40
@@ -73,8 +73,8 @@ with arcpy.da.UpdateCursor(parcels_OG, ['AREA', 'Max_Units', 'ZoningCode', 'area
             row[7] = units.get("Single Family", 0)
             
             # Apply Minor and Major Developments
-            if parcel_area >= 43560 and parcel_area < 653400:
-                lots = (parcel_area * 0.90) // 7000
+            if parcel_area >= 43560 and parcel_area < 653400:  # 15 acres
+                lots = (parcel_area * 0.90) // 7000  # 10% for site constraints
                 lotsXSC = parcel_area // 7000
                 if lots <= 10:
                     sf_mn = lots
@@ -83,8 +83,8 @@ with arcpy.da.UpdateCursor(parcels_OG, ['AREA', 'Max_Units', 'ZoningCode', 'area
                     sf_mj = lots
                     sf_mn = 0
                     
-            elif parcel_area >= 653400:
-                lots = (parcel_area * 0.60) // 7000
+            elif parcel_area >= 653400:  # 15 acres
+                lots = (parcel_area * 0.60) // 7000  # 40% for site constraints
                 lotsXSC = parcel_area // 7000
                 if lots <= 10:
                     sf_mn = lots
