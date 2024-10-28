@@ -1,5 +1,5 @@
-with arcpy.da.UpdateCursor(parcels_OG, ['AREA', 'Max_Units', 'ZoningCode', 'area_sc', 'area_rem',
-                                        'SF','TH','MF','SMH','DU','SD','TNH','PH','THQ', 'SF_MN', 'SF_MJ', 'lots', 'lotsXSC']) as cursor:
+with arcpy.da.UpdateCursor(parcel_data, ['AREA', 'Max_Units', 'ZoningCode', 'area_sc', 'area_rem',
+                                         'SF','TH','MF','SMH','DU','SD','TNH','PH','THQ', 'SF_MN', 'SF_MJ', 'lots', 'lotsXSC']) as cursor:
     for row in cursor:
         parcel_area = row[0]
         max_units = row[1]
@@ -21,6 +21,7 @@ with arcpy.da.UpdateCursor(parcels_OG, ['AREA', 'Max_Units', 'ZoningCode', 'area
         lotsXSC = row[17]
 
 	if "MRD2" in zoning_districts:
+	    # Compare the density restrictions between FLUM and zoning district and choose whichever is smaller
             max_density = int(8 * (parcel_area / 43560))
             if max_units == 0:
                 max_units = max_density
@@ -32,7 +33,7 @@ with arcpy.da.UpdateCursor(parcels_OG, ['AREA', 'Max_Units', 'ZoningCode', 'area
                 max_units = max_density
                 row[1] = max_units
 
-            # Define the minimum lot areas and development sizes
+            # Define the minimum lot areas
             minimum_areas = {
                 "Single Family": 6000,  # sq ft
                 "Duplex": 7000,         # sq ft
@@ -44,7 +45,7 @@ with arcpy.da.UpdateCursor(parcels_OG, ['AREA', 'Max_Units', 'ZoningCode', 'area
             }
 
             # Define the proportions
-            if parcel_area >= 653400:
+            if parcel_area >= 653400:  # 15 acres
                 proportions = {
                     "Single Family": 0.15,
                     "Multi Family": 0.10,
@@ -66,7 +67,8 @@ with arcpy.da.UpdateCursor(parcels_OG, ['AREA', 'Max_Units', 'ZoningCode', 'area
                     "Semi-Detached": 0.10,
                     "Site Constraints": 0.10
                 }
-                
+
+	    # Define the maximum density for each housing type
             maxden = {
                 "Single Family": max_units * proportions["Single Family"] + max_units * proportions["Site Constraints"],
                 "Multi Family": max_units * proportions["Multi Family"],
@@ -87,7 +89,7 @@ with arcpy.da.UpdateCursor(parcels_OG, ['AREA', 'Max_Units', 'ZoningCode', 'area
                     maxden[type_] += 1
                     units_rem -= 1
             
-            # Remove the constraints area
+            # Remove the site constraints area and calculate the area for each housing type
             area_sc = parcel_area * proportions["Site Constraints"]
             area_rem = parcel_area - area_sc
             area = {
@@ -100,8 +102,8 @@ with arcpy.da.UpdateCursor(parcels_OG, ['AREA', 'Max_Units', 'ZoningCode', 'area
                 "Semi-Detached": parcel_area * proportions["Semi-Detached"]
             }
             
-            row[3] = area_sc
-            row[4] = area_rem
+            row[3] = area_sc  # site constraints area
+            row[4] = area_rem  # remaining area # development area
             
             # Calculate the maximum units for each type
             units = {}
@@ -138,8 +140,8 @@ with arcpy.da.UpdateCursor(parcels_OG, ['AREA', 'Max_Units', 'ZoningCode', 'area
             row[10] = units.get("Semi-Detached", 0)
             
             # Apply Minor and Major Developments
-            if parcel_area >= 43560 and parcel_area < 653400:
-                lots = (parcel_area * 0.90) // 6000
+            if parcel_area >= 43560 and parcel_area < 653400:  # 15 acres
+                lots = (parcel_area * 0.90) // 6000  # 10% for site constraints
                 lotsXSC = parcel_area // 6000
                 if lots <= 10:
                     sf_mn = lots
@@ -148,8 +150,8 @@ with arcpy.da.UpdateCursor(parcels_OG, ['AREA', 'Max_Units', 'ZoningCode', 'area
                     sf_mj = lots
                     sf_mn = 0
                     
-            elif parcel_area >= 653400:
-                lots = (parcel_area * 0.60) // 6000
+            elif parcel_area >= 653400:  # 15 acres
+                lots = (parcel_area * 0.60) // 6000  # 40% for site constraints
                 lotsXSC = parcel_area // 6000
                 if lots <= 10:
                     sf_mn = lots
