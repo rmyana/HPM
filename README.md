@@ -21,8 +21,10 @@ This is the workflow of Housing Projection Model (HPM), developed by Rajiv Myana
   - Define Minimum Required Area for each housing type by each zoning district. <br/>
   - Set Maximum Lot Coverage and Maximum Density for each housing type by each zoning district. <br/>
     - If there is maximum density regulation for zoning district, compare the maximum density for FLUM and zoning district and choose whichever is smaller. <br/>
-  ### Outcome: The number of housing units for each housing type by each zoning district. <br/>
+
+**Outcome: The number of housing units for each housing type by each zoning district. <br/>**
 ## 5. Apply subdivisions (lot size). <br/>
   - Set the proportion for site constraints area based on the parcel size. <br/>
   - Calculate Single Family housing units for Minor and Major Developments. <br/>
-  ### Outcome: The number of Single Family housing units for entire vacant parcels. <br/>
+
+**Outcome: The number of Single Family housing units for entire vacant parcels. <br/>**
