@@ -27,4 +27,4 @@ This is the workflow of Housing Projection Model (HPM), developed by Rajiv Myana
   - Set the proportion for site constraints area based on the parcel size. <br/>
   - Calculate Single Family housing units for Minor and Major Developments. <br/>
 
-**Outcome: The number of Single Family housing units for entire vacant parcels. <br/>**
+**Outcome: The number of housing units for entire vacant parcels. <br/>**
