@@ -1,7 +1,7 @@
 # HPM Workflow
 This is the workflow of Housing Projection Model (HPM), developed by Rajiv Myana and Su Jeong Jo for the Horry County Government. Since zoning ordinances can vary significantly across different local governments, this guide is to provide a general workflow. We recommend you to adapt this process to align with your local regulations. <br/>
 
-**Please see the Sample Scripts for the Major Residential District (MRD2), which allows multiple housing types, and for Single Family (SF7), which allows only one housing type. <br/>**
+**Please see the sample scripts for the Major Residential District (MRD2) [`MRD2.txt`](MRD2.txt), which allows multiple housing types, and for Single Family (SF7) [`SF7.txt`](SF7.txt), which allows only one housing type. <br/>**
 
 ## 1. Prepare GIS data and refined Zoning Ordinances. <br/>
   - GIS data <br/>
