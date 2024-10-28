@@ -1,0 +1,88 @@
+if zoning_district == "SF 6":
+            # Apply zoning-specific calculations and constraints
+            units = {}
+            if parcel_area >= 653400:
+                proportions = {
+                    "Single Family": 0.35,
+                    "Duplex": 0.10,
+                    "Semi-Detached": 0.15,
+                    "Site Constraints": 0.40
+                }
+            else:
+                proportions = {
+                    "Single Family": 0.65,
+                    "Duplex": 0.10,
+                    "Semi-Detached": 0.15,
+                    "Site Constraints": 0.10
+                }
+            
+            minimum_areas = {
+                "Single Family": 6000,
+                "Duplex": 8000,
+                "Semi-Detached": 8000
+            }
+            
+            area = {
+                "Single Family": parcel_area * proportions["Single Family"],
+                "Duplex": parcel_area * proportions["Duplex"],
+                "Semi-Detached": parcel_area * proportions["Semi-Detached"]
+            }
+            
+            maxden = {
+                "Single Family": max_units * proportions["Single Family"] + max_units * proportions["Site Constraints"],
+                "Duplex": max_units * proportions["Duplex"],
+                "Semi-Detached": max_units * proportions["Semi-Detached"]
+            }
+            units_tot = sum(maxden.values())
+            if units_tot < max_units:
+                units_rem = max_units - units_tot
+                distri = sorted([(k, v) for k, v in proportions.items()
+                                 if k != "Site Constraints"], key=lambda x: -x[1])
+                for type_, _ in distri:
+                    if units_rem == 0:
+                        break
+                    maxden[type_] += 1
+                    units_rem -= 1
+                        
+            for type_, lotarea in minimum_areas.items():
+                if type_ in area:
+                    units[type_] = area[type_] // lotarea
+                    if type_ == "Semi-Detached":
+                        units[type_] = units[type_] * 2
+
+                    if max_units == 0:
+                        units[type_] = units[type_]
+                    elif max_units != 0 and units[type_] >= maxden[type_]:
+                        units[type_] = maxden[type_]
+                    elif max_units != 0 and units[type_] < maxden[type_]:
+                        units[type_] = units[type_]
+                
+            row[7] = units.get("Single Family", 0)
+            row[11] = units.get("Duplex", 0)
+            row[12] = units.get("Semi-Detached", 0)
+            
+            # Apply Minor and Major Developments
+            if parcel_area >= 43560 and parcel_area < 653400:
+                lots = (parcel_area * 0.90) // 6000
+                lotsXSC = parcel_area // 6000
+                if lots <= 10:
+                    sf_mn = lots
+                    sf_mj = 0
+                elif lots > 10:
+                    sf_mj = lots
+                    sf_mn = 0
+                    
+            elif parcel_area >= 653400:
+                lots = (parcel_area * 0.60) // 6000
+                lotsXSC = parcel_area // 6000
+                if lots <= 10:
+                    sf_mn = lots
+                    sf_mj = 0
+                elif lots > 10:
+                    sf_mj = lots
+                    sf_mn = 0
+                    
+            row[16] = sf_mn
+            row[17] = sf_mj
+            row[18] = lots
+            row[19] = lotsXSC

@@ -1,0 +1,114 @@
+if "MRD 1" in zoning_districts:
+            max_density = int(4 * (parcel_area / 43560))
+            if max_units == 0:
+                max_units = max_density
+                row[1] = max_units
+            elif max_units <= max_density:
+                max_units = max_units
+                row[1] = max_units
+            elif max_units > max_density:
+                max_units = max_density
+                row[1] = max_units
+            
+            # Define the minimum lot areas and development sizes
+            minimum_areas = {
+                "Single Family": 10000,  # sq ft
+                "Duplex": 8000,         # sq ft
+                "Semi-Detached": 4000,   # sq ft
+                "Tiny Home": 1200        # sq ft
+            }
+
+            # Define the proportions
+            if parcel_area >= 653400:
+                proportions = {
+                    "Single Family": 0.40,
+                    "Tiny Home": 0.10,
+                    "Duplex": 0.05,
+                    "Semi-Detached": 0.05,
+                    "Site Constraints": 0.40
+                }
+            else:
+                proportions = {
+                    "Single Family": 0.70,
+                    "Tiny Home": 0.10,
+                    "Duplex": 0.05,
+                    "Semi-Detached": 0.05,
+                    "Site Constraints": 0.10
+                }
+            
+            maxden = {
+                "Single Family": max_units * proportions["Single Family"] + max_units * proportions["Site Constraints"],
+                "Tiny Home": max_units * proportions["Tiny Home"],
+                "Duplex": max_units * proportions["Duplex"],
+                "Semi-Detached": max_units * proportions["Semi-Detached"]
+            }
+            units_tot = sum(maxden.values())
+            if units_tot < max_units:
+                units_rem = max_units - units_tot
+                distri = sorted([(k, v) for k, v in proportions.items()
+                                 if k != "Site Constraints"], key=lambda x: -x[1])
+                for type_, _ in distri:
+                    if units_rem == 0:
+                        break
+                    maxden[type_] += 1
+                    units_rem -= 1
+            
+            # Remove the constraints area
+            area_sc = parcel_area * proportions["Site Constraints"]
+            area_rem = parcel_area - area_sc
+            area = {
+                "Single Family": parcel_area * proportions["Single Family"],
+                "Tiny Home": parcel_area * proportions["Tiny Home"],
+                "Duplex": parcel_area * proportions["Duplex"],
+                "Semi-Detached": parcel_area * proportions["Semi-Detached"]
+            }
+            
+            row[3] = area_sc
+            row[4] = area_rem
+            
+            # Calculate the maximum units for each type
+            units = {}
+            
+            for type_, lotarea in minimum_areas.items():
+                # Calculate max units based on development size
+                units[type_] = area[type_] // lotarea
+                if type_ == "Semi-Detached":
+                        units[type_] = units[type_] * 2
+
+                if max_units == 0:
+                    units[type_] = units[type_]
+                elif max_units != 0 and units[type_] >= maxden[type_]:
+                    units[type_] = maxden[type_]
+                elif max_units != 0 and units[type_] < maxden[type_]:
+                    units[type_] = units[type_]
+
+            row[5] = units.get("Single Family", 0)
+            row[11] = units.get("Tiny Home", 0)
+            row[9] = units.get("Duplex", 0)
+            row[10] = units.get("Semi-Detached", 0)
+            
+            # Apply Minor and Major Developments
+            if parcel_area >= 43560 and parcel_area < 653400:
+                lots = (parcel_area * 0.90) // 10000
+                lotsXSC = parcel_area // 10000
+                if lots <= 10:
+                    sf_mn = lots
+                    sf_mj = 0
+                elif lots > 10:
+                    sf_mj = lots
+                    sf_mn = 0
+                    
+            elif parcel_area >= 653400:
+                lots = (parcel_area * 0.60) // 10000
+                lotsXSC = parcel_area // 10000
+                if lots <= 10:
+                    sf_mn = lots
+                    sf_mj = 0
+                elif lots > 10:
+                    sf_mj = lots
+                    sf_mn = 0
+                    
+            row[14] = sf_mn
+            row[15] = sf_mj
+            row[16] = lots
+            row[17] = lotsXSC
