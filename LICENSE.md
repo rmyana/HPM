@@ -8,6 +8,7 @@ the following conditions:
 
 The above copyright notice and this permission notice shall be
 included in all copies or substantial portions of the Script. Please provide Citation.
+Authors: Rajiv Myana, Su Jo
 
 IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
