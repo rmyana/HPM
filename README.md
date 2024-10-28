@@ -24,3 +24,6 @@
   (10%: between 1 acre and 15 acres, 40%: greater than 15 acres)
   b. Calculate Single Family housing units for Minor and Major Developments.
   (Minor: smaller than or equal to 10 lots, Major: greater than 10 lots)
+
+
+Please See Sample Scripts for Major Residential District (MRD) allows different housing types and (SINGLE FAMILY) SF6 only one housing type.
